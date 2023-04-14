@@ -64,8 +64,10 @@ def prep_and_send(data,total_rotations):
 
     total_cups = total_rotations/cup_movements
     total_gallons = total_cups/16
-    now = datetime.datetime.now() 
-    print('{}: Movements: {}. \nCups: {}. \nGallons: {}'.format(now,total_rotations,total_cups,total_gallons))
+    now = datetime.datetime.now()
+    print(
+        f'{now}: Movements: {total_rotations}. \nCups: {total_cups}. \nGallons: {total_gallons}'
+    )
 
     current_data = (
         now,
@@ -84,7 +86,7 @@ def prep_and_send(data,total_rotations):
     except psycopg2.OperationalError as e:
         '''In case of error does not reset data to [] (see commit_data).'''
         e = e + '\n' + e.__traceback__
-        print (e)                      
+        print (e)
     return data
 
 while True:
@@ -108,10 +110,7 @@ while True:
         if time.time() <= last_movement_time: #if it hasn't been more than 10 seconds
             record_data = True
             current_input = new_input
-            last_movement_time = time.time() + rotation_downtime
-        else: #flow starts
-            last_movement_time = time.time() + rotation_downtime
-
+        last_movement_time = time.time() + rotation_downtime
     elif record_data == True and time.time() > last_movement_time: #if it's been x seconds since last change
         data = prep_and_send(data,total_rotations)
         record_data = False
@@ -123,9 +122,9 @@ while True:
 This last part simply prints some helpful information. It also allows for a clean exit if user presses Ctrl + C.
 '''
 
-    try:
-        print('New input: ',new_input, '. Current input: ', current_input, '. Movements: ', total_rotations)
-    except KeyboardInterrupt:
-        print('\nCTRL C - Exiting nicely')
-        GPIO.cleanup()
-        sys.exit()
+try:
+    print('New input: ',new_input, '. Current input: ', current_input, '. Movements: ', total_rotations)
+except KeyboardInterrupt:
+    print('\nCTRL C - Exiting nicely')
+    GPIO.cleanup()
+    sys.exit()
